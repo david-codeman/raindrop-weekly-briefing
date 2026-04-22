@@ -694,6 +694,11 @@ function sendWeeklyBriefing() {
     GmailApp.sendEmail(config.emailTo, subject, 'See HTML version', { htmlBody: html });
     Logger.log('Email sent to ' + config.emailTo + '. ' + analyses.length + ' bookmarks analyzed.');
 
+    // Gmail sometimes skips inbox for self-sent emails — force it
+    Utilities.sleep(2000);
+    var sent = GmailApp.search('subject:"Your Week in Bookmarks" newer_than:1d from:me to:me', 0, 1);
+    if (sent.length > 0) sent[0].moveToInbox();
+
     // Success — reset failure counter
     props.setProperty('CONSECUTIVE_FAILURES', '0');
 
